@@ -1,88 +1,28 @@
-import 'package:belajar_flutter/api/provider/divisi.dart';
-import 'package:belajar_flutter/model/divisi.model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'view/utils/response.dart';
+import 'package:belajar_flutter/list_divisi.dart';
+import 'package:belajar_flutter/list_view.dart';
+import 'package:belajar_flutter/basic1/gradient_container.dart';
 
 void main() {
   runApp(MaterialApp(
     theme: ThemeData(primaryColor: Colors.deepOrange),
-    home: ListViewDivisi(),
+    home: const MyApp(),
   ));
 }
 
-class ListViewDivisi extends StatefulWidget {
-  const ListViewDivisi({super.key});
-
-  @override
-  State<ListViewDivisi> createState() => _ListViewDivisiState();
-}
-
-class _ListViewDivisiState extends State<ListViewDivisi> {
-  DivisiProvider divisiProvider = DivisiProvider();
-
-  @override
-  void initState() {
-    super.initState();
-    getDivisi();
-  }
-
-  void getDivisi() {
-    divisiProvider.divisi(context);
-  }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Flutter List View 6"),
+        title: const Text("Dice Roller"),
       ),
-      body: ChangeNotifierProvider<DivisiProvider>.value(
-        value: divisiProvider,
-        child: Consumer<DivisiProvider>(
-          builder: (ctx, provider, _) {
-            switch (provider.list.state) {
-              case ResponseState.LOADING:
-                return Text("Loading");
-              case ResponseState.COMPLETE:
-                return provider.data!.isEmpty
-                    ? Text("Data Kosong")
-                    : buildScreen(context, provider.data!);
-              case ResponseState.ERROR:
-                return Center(
-                    child: Text(
-                      'Terjadi kesalahan pada server',
-                    ),
-                  );
-              default:
-                return Text("Data Kosong");
-            }
-          },
-        ),
+      body: const GradientContainer(
+        Color.fromARGB(255, 33, 5, 109),
+        Color.fromARGB(255, 68, 21, 149),
       ),
-    );
-  }
-
-  Widget buildScreen(context, List<DivisiModel> datas) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        getDivisi();
-      },
-      child:  ListView.builder(
-            itemCount: datas.length,
-            itemBuilder: (context, index) {
-              return Card(
-                  child: ListTile(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('${datas[index].nama} pressed!'),
-                        ));
-                      },
-                      title: Text(datas[index].nama ?? ''),
-                      subtitle: Text(datas[index].kode ?? ''),
-                      ));
-            }),
     );
   }
 }
